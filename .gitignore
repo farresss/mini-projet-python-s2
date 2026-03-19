@@ -26,3 +26,7 @@ replay_pid*
 #Eclipse
 .classpath
 .project
+
+#fichier sensible
+mdp.db
+mdp.csv
