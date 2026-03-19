@@ -1,6 +1,7 @@
 import secrets
 import string as s
 import csv
+import sqlite3
 
 def generer_mdp(taille, majuscule = True, chiffre = True, car_spec = True):
   char = s.ascii_lowercase
@@ -30,7 +31,22 @@ def sauvegarde_mdp(user, location, mdp):
     writer.writerow([user, location, mdp])
 
 
+connection = sqlite3.connect("mdp.db")
+connection.execute("PRAGMA foreign_keys = 1")
+cursor = connection.cursor()
 
-sauvegarde_mdp("test2", "ent", generer_mdp(20))
-print(generer_mdp(20))
+cursor.execute('''CREATE TABLE IF NOT EXISTS user (id_user INTEGER PRIMARY KEY, 
+               username TEXT);''')
 
+cursor.execute('''CREATE TABLE IF NOT EXISTS mdp (id_mdp INTEGER PRIMARY KEY,
+                mdp TEXT,
+                location TEXT,
+                id_user INTEGER,
+                FOREIGN KEY (id_user) REFERENCES user (id_user)); ''')
+connection.commit()
+
+print(connection.total_changes)
+
+
+
+#sauvegarde_mdp("test2", "ent", generer_mdp(20))
