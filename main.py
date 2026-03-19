@@ -1,5 +1,6 @@
 import secrets
 import string as s
+import csv
 
 def generer_mdp(taille, majuscule = True, chiffre = True, car_spec = True):
   char = s.ascii_lowercase
@@ -22,6 +23,14 @@ def generer_mdp(taille, majuscule = True, chiffre = True, car_spec = True):
 
   return mdp
 
+def sauvegarde_mdp(user, location, mdp):
 
+  with open("mdp.csv", "a", newline= "") as f:
+    writer = csv.writer(f)
+    writer.writerow([user, location, mdp])
+
+
+
+sauvegarde_mdp("test2", "ent", generer_mdp(20))
 print(generer_mdp(20))
 
