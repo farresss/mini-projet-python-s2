@@ -34,3 +34,5 @@ cle.key
 
 #fichier perso
 maincp.py
+
+__pycache__

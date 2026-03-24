@@ -1,6 +1,8 @@
 from auth import login, create_user
 from generate import generer_mdp
 from password import add_mdp, modifier_mdp, get_mdp
+from browser import login_github_test
+import time
 
 
 email = input("entrez votre email : ")
@@ -41,9 +43,11 @@ while True:
     print("Mdp modifier")
   
   elif choix == "4":
-    #Implementer selenium
-    print("soon...")
-
+    location = input("Choisir Site : ")
+    driver = login_github_test(id_user, email)
+    time.sleep(20)
+    driver.quit()
+    
   elif choix == "5":
     print("Salut")
     break
