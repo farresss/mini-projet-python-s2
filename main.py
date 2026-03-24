@@ -2,7 +2,14 @@ import secrets
 import string as s
 import csv
 import sqlite3
-import hashlib
+from argon2 import PasswordHasher
+from argon2.exceptions import VerifyMismatchError
+from cryptography.fernet import Fernet
+
+ph = PasswordHasher()
+
+cle = open("cle.key", "rb").read()
+fernet = Fernet(cle)
 
 def generer_mdp(taille, majuscule = True, chiffre = True, car_spec = True):
   char = s.ascii_lowercase
@@ -47,34 +54,66 @@ cursor.execute('''CREATE TABLE IF NOT EXISTS mdp (id_mdp INTEGER PRIMARY KEY,
                 FOREIGN KEY (id_user) REFERENCES user (id_user)); ''')
 connection.commit()
 
-def hash_mdp(mdp):
-  return  hashlib.sha256(mdp.encode()).hexdigest()
+def chiffrement_mdp(mdp):
+  return fernet.encrypt(mdp.encode()).decode()
+
+def dechiffrement_mdp(mdp_chiffre):
+  return fernet.decrypt(mdp_chiffre.encode()).decode()
+
 def create_user(email, mdp_compte):
-  cursor.execute("INSERT INTO user (email, mdp_compte) values (?, ?);", (email, hash_mdp(mdp_compte)))
+  mdp_hash = ph.hash(mdp_compte)
+  cursor.execute("INSERT INTO user (email, mdp_compte) values (?, ?);", (email, mdp_hash))
   connection.commit()
 
 def login(email, mdp_compte):
-  cursor.execute("SELECT * FROM user WHERE email = ? AND mdp_compte = ?", (email, hash_mdp(mdp_compte)))
+  cursor.execute("SELECT id_user, mdp_compte FROM user WHERE email = ?", (email,))
   row =  cursor.fetchone()
   if row != None:
-    return row[0]
+    id_user =  row[0]
+    hash_stock = row[1]
+    try:
+      ph.verify(hash_stock, mdp_compte)
+      return id_user
+    except VerifyMismatchError:
+      return False
   else:
     return False
   
 def add_mdp(mdp, location, id_user):
-  cursor.execute("INSERT INTO mdp (mdp, location, id_user) VALUES (?, ?, ?)", (mdp, location, id_user))
+  
+  cursor.execute("INSERT INTO mdp (mdp, location, id_user) VALUES (?, ?, ?)", (chiffrement_mdp(mdp), location, id_user))
   connection.commit()
 
 def get_mdp(location, id_user):
   cursor.execute("SELECT mdp FROM mdp WHERE location = ? AND id_user = ? ", (location, id_user))
   row =  cursor.fetchone()
   if row != None:
-    return row[0]
+    return dechiffrement_mdp(row[0])
   else:
     return False
+  
+def modifier_mdp(mdp, location, id_user):
+  
+  new_mdp = chiffrement_mdp(mdp)
+  cursor.execute("UPDATE mdp SET mdp = ? WHERE location = ? AND id_user = ?", (new_mdp, location, id_user))
+  connection.commit()
+
+
+'''create_user("test@test.gmail.com", "mdp123")
+print(login("test@test.gmail.com", "mdp123"))
+print(login("test@test.gmail.com", "123333"))'''
+
+
+
+
+
+
+
+
+
+
+
+
 
 #print(connection.total_changes)
-
-
-
 #sauvegarde_mdp("test2", "ent", generer_mdp(20))
