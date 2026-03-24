@@ -31,3 +31,6 @@ replay_pid*
 mdp.db
 mdp.csv
 cle.key
+
+#fichier perso
+maincp.py
