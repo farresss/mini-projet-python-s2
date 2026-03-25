@@ -1,7 +1,7 @@
 from auth import login, create_user
 from generate import generer_mdp
 from password import add_mdp, modifier_mdp, get_mdp
-from browser import login_github_test
+from browser import login_site
 import time
 
 
@@ -44,7 +44,7 @@ while True:
   
   elif choix == "4":
     location = input("Choisir Site : ")
-    driver = login_github_test(id_user, email)
+    driver = login_site(location, id_user, email)
     time.sleep(20)
     driver.quit()
     
