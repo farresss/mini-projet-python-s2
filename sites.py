@@ -14,6 +14,21 @@ sites = {
       "submit" : (By.ID, "submit-button")
     },
 
+     "leetcode": {
+      "url": "https://leetcode.com/accounts/login/",
+      "email": (By.ID, "id_login"),
+      "mdp" : (By.ID, "id_password"),
+      "submit" : (By.ID, "signin_btn")
+    },
+
+    
+
+    
+
+
+
+
+
 
 
 

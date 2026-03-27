@@ -5,6 +5,9 @@ from cryptography.fernet import Fernet
 
 ph = PasswordHasher()
 
+"""key = Fernet.generate_key()
+print(key)""" #pour avoir sa propre cle car je ne partage pas les fichier cle il faut donc cree un fichier cle.key et la mettre dedans
+
 cle = open("cle.key", "rb").read()
 fernet = Fernet(cle)
 
